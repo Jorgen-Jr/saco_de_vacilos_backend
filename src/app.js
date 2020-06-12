@@ -1,8 +1,20 @@
 const express = require('express');
 const router = express.Router();
 const authMiddleware = require('./middlewares/auth');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const app = express();
 
-const connection = require('./database');
+//Next time you think of deleting this line, think again you dummy.
+//We need to connect to the database, don't we?
+const connection = require('./database/index');
+
+//Usando as politicas de acesso do cors
+app.use(cors());
+
+//Permitir que a aplicação receba requisições em formato json
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 
 //User Controllers
 const UserController = require('./controllers/UserController');
@@ -15,23 +27,18 @@ const PostController = require('./controllers/PostController');
 const PostCommentController = require('./controllers/PostCommentController');
 const PostUserActions = require('./controllers/PostUserActions');
 
-//Rota inicial da api
-router.get('/', async (req, res) => {
-  let connectionStatus = '';
-  try {
-    await connection.authenticate();
-    connectionStatus = 'Database connection sucessfull!';
-  } catch (error) {
-    return res.status(500).json({
-      message: "Something went wrong hooman :(",
-      database: error,
-    });
-  }
-  res.status(200).json({
-    message: "I am working hoomanz!",
-    database: connectionStatus,
+//Load the local environment when not in production...
+if (process.env.NODE_ENV !== 'production') {
+  if (process.env.NODE_ENV === 'test') {
+      require('dotenv').config({
+          path: '.env.test',
+      });
+  }else{
+    require('dotenv').config({
+      path: '.env',
   });
-});
+  }
+}
 
 //Rota de login de usuário.
 router.post('/users/login', UserController.login);
@@ -80,4 +87,6 @@ router.delete('/posts/comments/:id', PostCommentController.delete);
 router.post('/posts/userActions/:id', PostUserActions.store);
 router.put('/posts/userActions/:id', PostUserActions.update);
 
-module.exports = app => app.use('', router);
+app.use('', router);
+
+module.exports = app;
