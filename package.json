@@ -13,8 +13,7 @@
   "license": "ISC",
   "devDependencies": {
     "nodemon": "^1.19.4",
-    "sequelize-cli": "^5.5.1",
-    "minimist": ">=1.2.3"
+    "sequelize-cli": "^5.5.1"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
