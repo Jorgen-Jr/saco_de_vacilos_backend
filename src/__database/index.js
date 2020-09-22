@@ -1,14 +1,14 @@
-const Sequelize  = require('sequelize');
+const Sequelize = require('sequelize');
 const dbConfig = require('../config/database');
 
-const User = require('../models/User');
-const Role = require('../models/Role');
-const UserSettings = require('../models/UserSettings');
-const FollowingRelationship = require('../models/FollowingRelationship');
-const UserProfile = require('../models/UserProfile');
-const Post = require('../models/Post');
-const PostComment = require('../models/PostComment');
-const PostUserAction = require('../models/PostUserAction');
+const User = require('../__models/User');
+const Role = require('../__models/Role');
+const UserSettings = require('../__models/UserSettings');
+const FollowingRelationship = require('../__models/FollowingRelationship');
+const UserProfile = require('../__models/UserProfile');
+const Post = require('../__models/Post');
+const PostComment = require('../__models/PostComment');
+const PostUserAction = require('../__models/PostUserAction');
 
 const connection = new Sequelize(dbConfig);
 
