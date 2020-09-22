@@ -1,9 +1,9 @@
 const Post = require('../models/Post');
-const Sequelize = require('sequelize');
-const Op = Sequelize.Op;
+import { Response, Request } from 'express';
+import { Op, Sequelize } from '../../node_modules/sequelize/types/index';
 
 module.exports = {
-    async search(req, res) {
+    async search(req: Request, res: Response) {
         const { query } = req.body;
 
         const results = await Post.findAll({
@@ -24,7 +24,7 @@ module.exports = {
         return res.json(results);
     },
 
-    async index(req, res) {
+    async index(req: Request, res: Response) {
         const post = await Post.findAll(
             {
                 include: [{
@@ -46,7 +46,7 @@ module.exports = {
         return res.json(post);
     },
 
-    async indexByPk(req, res) {
+    async indexByPk(req: Request, res: Response) {
         const post_id = req.params.id;
 
         const post = await Post.findByPk(post_id, {
@@ -66,7 +66,7 @@ module.exports = {
         return res.json(post);
     },
 
-    async store(req, res) {
+    async store(req: Request, res: Response) {
         const author_id = parseInt(req.params.id);
 
         const {
@@ -88,14 +88,14 @@ module.exports = {
             deserved_count,
             undeserved_count,
             view_count,
-        }).catch(err => {
+        }).catch((err: any) => {
             return res.status(500).json({ message: err.message })
         });
 
         return res.json(post);
     },
 
-    async update(req, res) {
+    async update(req: Request, res: Response) {
         const post_id = req.params.id;
 
         const {
@@ -122,7 +122,7 @@ module.exports = {
         return res.json(post);
     },
 
-    async delete(req, res) {
+    async delete(req: Request, res: Response) {
         const id = req.params.id;
 
         const response = await Post.destroy({
@@ -134,7 +134,7 @@ module.exports = {
         return res.json(response);
     },
 
-    async byAuthor(req, res) {
+    async byAuthor(req: Request, res: Response) {
         const author_id = req.params.id;
 
         const post = await Post.findAll({
@@ -159,7 +159,7 @@ module.exports = {
         return res.json(post);
     },
 
-    async byGuilty(req, res) {
+    async byGuilty(req: Request, res: Response) {
         const guilty_id = req.params.id;
 
         const post = await Post.findAll({

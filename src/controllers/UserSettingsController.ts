@@ -1,8 +1,10 @@
+import { Request, Response } from "express";
+import { Op, Sequelize } from '../../node_modules/sequelize/types/index';
+
 const UserSettings = require('../models/UserSettings');
-const Sequelize = require('sequelize');
 
 module.exports = {
-    async indexByPk(req, res) {
+    async indexByPk(req: Request, res: Response) {
         const user_id = req.params.id;
 
         const user_settings = await UserSettings.findAll(
@@ -13,7 +15,7 @@ module.exports = {
         return res.json(user_settings);
     },
 
-    async store(req, res) {
+    async store(req: Request, res: Response) {
         const user_id = req.params.id;
 
         const {
@@ -32,7 +34,7 @@ module.exports = {
         return res.json(user_settings);
     },
 
-    async update(req, res) {
+    async update(req: Request, res: Response) {
         const user_id = req.params.id;
 
         const {

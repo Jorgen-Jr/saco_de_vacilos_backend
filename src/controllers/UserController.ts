@@ -1,6 +1,7 @@
+import { Request, Response } from "express";
+import { Op, Sequelize } from '../../node_modules/sequelize/types/index';
+
 const User = require('../models/User');
-const Sequelize = require('sequelize');
-const Op = Sequelize.Op;
 
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -8,16 +9,16 @@ const { SESSION_SECRET } = require('../util/secrets');
 
 module.exports = {
 
-    async index(req, res) {
+    async index(req: Request, res: Response) {
         const users = await User.findAll();
-        users.map(item => {
+        users.map((item: any) => {
             item.password_hash = undefined;
         })
 
         return res.json(users);
     },
 
-    async indexByPk(req, res) {
+    async indexByPk(req: Request, res: Response) {
         const user_id = req.params.id;
 
         const user = await User.findByPk(user_id, {
@@ -38,7 +39,7 @@ module.exports = {
         return res.json(user);
     },
 
-    async search(req, res) {
+    async search(req: Request, res: Response) {
         const { query } = req.body;
 
         const results = await User.findAll({
@@ -63,7 +64,7 @@ module.exports = {
         return res.json(results);
     },
     
-    async store(req, res) {
+    async store(req: Request, res: Response) {
         const { name, email, username, password } = req.body;
 
         const user = await User.create({ name, email, username, password });
@@ -71,12 +72,12 @@ module.exports = {
         return res.json(user);
     },
     
-    async update(req, res) {
+    async update(req: Request, res: Response) {
         const { name, email, username, password } = req.body;
         const user_id  = req.params.id;
         
         console.log(req.body);
-        password_hash = await bcrypt.hash(password, 8);
+        let password_hash = await bcrypt.hash(password, 8);
         const user = await User.update(
             { name, email, username, password_hash },
             { where: { id: user_id }}
@@ -85,7 +86,7 @@ module.exports = {
         return res.json(user);
     },
 
-    async login(req, res) {
+    async login(req: Request, res: Response) {
         const { username, password } = req.body;
 
         const user = await User.findOne({
@@ -122,7 +123,7 @@ module.exports = {
         });
     },
 
-    async isUsernameAvailable(req, res){
+    async isUsernameAvailable(req: Request, res: Response){
         const username = req.params.new_username;
 
         const check_username = await User.findOne({
@@ -136,7 +137,7 @@ module.exports = {
         return res.json(true);
     },
 
-    async isLoginExpired(req, res){
+    async isLoginExpired(req: Request, res: Response){
         const user_id = req.params.id;
 
         const user = await User.findByPk(user_id);

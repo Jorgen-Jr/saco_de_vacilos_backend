@@ -1,8 +1,10 @@
+import { Request, Response } from "express";
+import { Op, Sequelize } from '../../node_modules/sequelize/types/index';
+
 const PostUserAction = require('../models/PostUserAction');
-const Sequelize = require('sequelize');
 
 module.exports = {
-    async store(req, res) {
+    async store(req: Request, res: Response) {
         const post_id = parseInt(req.params.id);
 
         const {
@@ -14,14 +16,14 @@ module.exports = {
             post_id,
             user_id,
             action,
-        }).catch(err => {
+        }).catch((err: any) => {
             return res.status(500).json({ message: err.message })
         });
 
         return res.json(post_action);
     },
 
-    async update(req, res) {
+    async update(req: Request, res: Response) {
         const action_id = req.params.id;
 
         const {

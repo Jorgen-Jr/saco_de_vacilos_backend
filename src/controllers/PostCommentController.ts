@@ -1,9 +1,10 @@
-const PostComment = require('../models/PostComment');
-const Sequelize = require('sequelize');
-const Op = Sequelize.Op;
+const PostComment = require('../models/PostComment')
+const Post = require('../models/Post')
+import { Response, Request } from 'express';
+import { Op, Sequelize } from '../../node_modules/sequelize/types/index';
 
-module.exports = {
-    async search(req, res) {
+export default {
+    async search(req: Request, res: Response) {
         const { query } = req.body;
 
         const results = await PostComment.findAll({
@@ -24,13 +25,13 @@ module.exports = {
         return res.json(results);
     },
 
-    async index(req, res) {
+    async index(req: Request, res: Response) {
         const post_comment = await PostComment.findAll();
 
         return res.json(post_comment);
     },
 
-    async indexByPk(req, res) {
+    async indexByPk(req: Request, res: Response) {
         const post_id = req.params.id;
 
         const post_comment = await Post.findByPk(post_id, {
@@ -44,7 +45,7 @@ module.exports = {
         return res.json(post_comment);
     },
 
-    async store(req, res) {
+    async store(req: Request, res: Response) {
         const post_id = parseInt(req.params.id);
 
         const {
@@ -56,14 +57,14 @@ module.exports = {
             user_id,
             post_id,
             content,
-        }).catch(err => {
+        }).catch((err: any) => {
             return res.status(500).json({ message: err.message })
         });
 
         return res.json(post);
     },
 
-    async update(req, res) {
+    async update(req: Request, res: Response) {
         const post_id = parseInt(req.params.id);
 
         const {
@@ -83,7 +84,7 @@ module.exports = {
         return res.json(post);
     },
 
-    async delete(req, res) {
+    async delete(req: Request, res: Response) {
         const id = req.params.id;
 
         const response = await PostComment.destroy({

@@ -91,4 +91,4 @@ router.put('/posts/userActions/:id', PostUserActions.update);
 
 app.use('', router);
 
-module.exports = app;
+export default app;

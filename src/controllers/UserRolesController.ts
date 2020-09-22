@@ -1,21 +1,24 @@
+import { Request, Response } from "express";
+import { Op, Sequelize } from '../../node_modules/sequelize/types/index';
+
 const Role = require('../models/Role');
 const User = require('../models/User');
 
 module.exports = {
-    async index(req, res) {
+    async index(req: Request, res: Response) {
 
         const role = await Role.findAll();
 
         return res.json(role);
     },
 
-    async user_index(req, res) {
+    async user_index(req: Request, res: Response) {
         const role = await Role.findAll();
 
         return res.json(role);
     },
 
-    async store(req, res) {
+    async store(req: Request, res: Response) {
         const { user_id } = req.params;
         const { name, desc } = req.body;
 
@@ -34,7 +37,7 @@ module.exports = {
 
     },
 
-    async update(req, res) {
+    async update(req: Request, res: Response) {
         const id = req.params.role_id;
         const { name, desc } = req.body;
 
@@ -44,7 +47,7 @@ module.exports = {
 
     },
 
-    async delete(req, res) {
+    async delete(req: Request, res: Response) {
         const { user_id } = req.params;
         const { name, desc } = req.body;
 

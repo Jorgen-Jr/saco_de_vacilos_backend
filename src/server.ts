@@ -1,5 +1,5 @@
 //Referenciar as controllers (Rotas da api)
-const app = require('./app');
+import app from './app'
 
 //Porta que será usada pela API.
 app.listen(process.env.PORT);
