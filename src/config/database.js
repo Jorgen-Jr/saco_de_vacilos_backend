@@ -8,13 +8,13 @@ if (process.env.NODE_ENV !== 'production') {
   }
 
 module.exports = {
-    host: process.env.DB_URI || '172.18.0.3',
-    port: process.env.DB_PORT || '3306',
+    host: process.env.DB_URI || 'localhost',
+    port: process.env.DB_PORT || '3336',
     dialect: process.env.DB_DIALECT || 'mysql',
     storage: "./__tests__/database.sqlite",
     username: process.env.DB_USER || 'root',
     password: process.env.DB_PASSWORD || '@!Pass',
-    database: process.env.DB_DATABASE || 'DB_SACO_DE_VACILO',
+    database: process.env.DB_DATABASE || 'DB_SACO_DE_VACILOS',
     logging: false,
     define: {
         timestamps: true,

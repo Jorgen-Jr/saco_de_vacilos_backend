@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Rest API for it's Web Aplication",
   "main": "server.js",
+  "private": true,
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",

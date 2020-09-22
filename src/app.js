@@ -53,10 +53,12 @@ router.get('/users/bypk/:id', UserController.indexByPk);
 router.post('/users/search', UserController.search);
 router.put('/users/:id', UserController.update);
 router.get('/users/isLoginAvailable/:new_login', UserController.isUsernameAvailable);
+
 //Rotas para manipulação dos perfis do usuário
 router.get('/users/profile/:id', UserProfileController.indexByPk);
 router.post('/users/profile/:id', UserProfileController.store);
 router.put('/users/profile/:id', UserProfileController.update);
+
 //Rotas para manipulação das configurações do usuário
 router.get('/users/settings/:id', UserSettingsController.indexByPk);
 router.post('/users/settings/:id', UserSettingsController.store);
