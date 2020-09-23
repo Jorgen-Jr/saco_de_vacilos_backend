@@ -8,7 +8,7 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 module.exports = {
-  dbName: process.env.DB_DATABASE || "DB_SACO_DE_VACILOS",
+  dbName: process.env.DB_DATABASE || "db_vacilo",
   user: process.env.DB_USER || "root",
   password: process.env.DB_PASSWORD || "@!Pass",
   type: "postgresql",

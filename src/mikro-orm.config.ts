@@ -5,7 +5,7 @@ import path from "path";
 
 export default {
   entities: [User],
-  dbName: process.env.DB_DATABASE || "DB_SACO_DE_VACILOS",
+  dbName: process.env.DB_DATABASE || "db_vacilo",
   user: process.env.DB_USER || "root",
   password: process.env.DB_PASSWORD || "@!Pass",
   type: "postgresql",
