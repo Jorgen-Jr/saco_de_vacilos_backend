@@ -21,9 +21,11 @@ export class UserSettings {
   @Property({ default: true })
   notification_mentions!: Boolean;
 
+  @Field(() => Date)
   @Property({ type: "date" })
   createdAt = new Date();
 
+  @Field(() => Date)
   @Property({ type: "date", onUpdate: () => new Date() })
   updatedAt = new Date();
 

@@ -28,9 +28,11 @@ export class Role {
   @Property({ default: true })
   active!: Boolean;
 
+  @Field(() => Date)
   @Property({ type: "date" })
   createdAt = new Date();
 
+  @Field(() => Date)
   @Property({ type: "date", onUpdate: () => new Date() })
   updatedAt = new Date();
 

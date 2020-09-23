@@ -17,7 +17,7 @@ export class User {
   id!: number;
 
   @Field(() => String)
-  @Property()
+  @Property({ unique: true })
   username!: string;
 
   @Field(() => String)
@@ -25,7 +25,7 @@ export class User {
   name!: string;
 
   @Field(() => String)
-  @Property()
+  @Property({ unique: true })
   email!: string;
 
   @Property({ persist: false })
@@ -38,9 +38,11 @@ export class User {
   @Property({ default: true })
   active!: Boolean;
 
+  @Field(() => Date)
   @Property({ type: "date" })
   createdAt = new Date();
 
+  @Field(() => Date)
   @Property({ type: "date", onUpdate: () => new Date() })
   updatedAt = new Date();
 

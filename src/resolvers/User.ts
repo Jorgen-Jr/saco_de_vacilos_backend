@@ -1,6 +1,44 @@
 import { User } from "../entities/User";
 import { MyContext } from "../types";
-import { Resolver, Query, Mutation, Arg, Ctx, Int } from "type-graphql";
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Arg,
+  Ctx,
+  Int,
+  InputType,
+  Field,
+  ObjectType,
+} from "type-graphql";
+
+import argon2 from "argon2";
+
+@InputType()
+class UsernamePasswordInput {
+  @Field()
+  username: string;
+  @Field()
+  password: string;
+}
+
+@ObjectType()
+class FieldError {
+  @Field()
+  field: String;
+
+  @Field()
+  message: String;
+}
+
+@ObjectType()
+class UserResponse {
+  @Field(() => [FieldError], { nullable: true })
+  errors?: FieldError[];
+
+  @Field(() => User, { nullable: true })
+  user?: User;
+}
 
 @Resolver()
 export class UserResolver {
@@ -17,25 +55,93 @@ export class UserResolver {
     return em.findOne(User, { id });
   }
 
-  @Mutation(() => User)
-  async createUser(
-    @Arg("username") username: string,
+  @Mutation(() => UserResponse)
+  async register(
     @Arg("name") name: string,
     @Arg("email") email: string,
-    @Arg("password") password: string,
+    @Arg("options") options: UsernamePasswordInput,
     @Ctx() { em }: MyContext
-  ): Promise<User> {
+  ): Promise<UserResponse> {
+    if (options.username.length <= 2) {
+      return {
+        errors: [
+          {
+            field: "username",
+            message: "Username must have at least 3 characters",
+          },
+        ],
+      };
+    }
+
+    if (options.password.length <= 6) {
+      return {
+        errors: [
+          {
+            field: "username",
+            message: "Password must have at least 6 characters",
+          },
+        ],
+      };
+    }
+
+    if (!email) {
+      return {
+        errors: [
+          {
+            field: "email",
+            message: "Must enter a valid email",
+          },
+        ],
+      };
+    }
+
+    const password_hash = await argon2.hash(options.password);
+
     const user = em.create(User, {
-      username,
+      username: options.username,
       name,
       email,
-      password_hash: password,
+      password_hash,
       active: true,
     });
 
     await em.persistAndFlush(user);
 
-    return user;
+    return { user };
+  }
+
+  @Mutation(() => UserResponse)
+  async login(
+    // @Arg("email", { nullable: true }) email: string,
+    @Arg("options") options: UsernamePasswordInput,
+    @Ctx() { em }: MyContext
+  ): Promise<UserResponse> {
+    const user = await em.findOne(User, { username: options.username });
+
+    if (!user) {
+      return {
+        errors: [
+          {
+            field: "username",
+            message: "User does not exits",
+          },
+        ],
+      };
+    }
+    const valid = await argon2.verify(user.password_hash, options.password);
+
+    if (!valid) {
+      return {
+        errors: [
+          {
+            field: "password",
+            message: "Incorrect password",
+          },
+        ],
+      };
+    }
+
+    return { user };
   }
 
   @Mutation(() => User, { nullable: true })

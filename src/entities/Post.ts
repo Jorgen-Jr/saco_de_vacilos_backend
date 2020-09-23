@@ -34,9 +34,11 @@ export class Post {
   @Property()
   status!: String;
 
+  @Field(() => Date)
   @Property({ type: "date" })
   createdAt = new Date();
 
+  @Field(() => Date)
   @Property({ type: "date", onUpdate: () => new Date() })
   updatedAt = new Date();
 

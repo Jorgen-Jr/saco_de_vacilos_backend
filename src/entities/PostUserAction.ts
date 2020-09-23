@@ -22,9 +22,11 @@ export class PostUserAction {
   @Property({ type: "char" })
   action: String;
 
+  @Field(() => Date)
   @Property({ type: "date" })
   createdAt = new Date();
 
+  @Field(() => Date)
   @Property({ type: "date", onUpdate: () => new Date() })
   updatedAt = new Date();
 }
