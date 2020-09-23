@@ -7,18 +7,14 @@ import {
 } from "@mikro-orm/core";
 import { ObjectType, Field } from "type-graphql";
 
-import { Role } from "./Role";
+import { User } from "./User";
 
 @ObjectType()
 @Entity()
-export class User {
+export class Role {
   @Field(() => String)
   @PrimaryKey()
   id!: number;
-
-  @Field(() => String)
-  @Property()
-  username!: string;
 
   @Field(() => String)
   @Property()
@@ -26,13 +22,7 @@ export class User {
 
   @Field(() => String)
   @Property()
-  email!: string;
-
-  @Property({ persist: false })
-  password!: string;
-
-  @Property()
-  password_hash!: string;
+  description!: string;
 
   @Field(() => Boolean)
   @Property({ default: true })
@@ -44,6 +34,7 @@ export class User {
   @Property({ type: "date", onUpdate: () => new Date() })
   updatedAt = new Date();
 
-  @ManyToMany(() => Role, "users", { owner: true })
-  roles = new Collection<Role>(this);
+  @Field(() => [User])
+  @ManyToMany(() => User, "roles")
+  users = new Collection<User>(this);
 }

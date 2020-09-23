@@ -2,9 +2,25 @@ import { __prod__ } from "./constants";
 import { MikroORM } from "@mikro-orm/core";
 import { User } from "./entities/User";
 import path from "path";
+import { Role } from "./entities/Role";
+import { FollowingRelationship } from "./entities/FollowingRelationship";
+import { Post } from "./entities/Post";
+import { PostComment } from "./entities/PostComment";
+import { PostUserAction } from "./entities/PostUserAction";
+import { UserProfile } from "./entities/UserProfile";
+import { UserSettings } from "./entities/UserSettings";
 
 export default {
-  entities: [User],
+  entities: [
+    User,
+    Role,
+    FollowingRelationship,
+    Post,
+    PostComment,
+    PostUserAction,
+    UserProfile,
+    UserSettings,
+  ],
   dbName: process.env.DB_DATABASE || "db_vacilo",
   user: process.env.DB_USER || "root",
   password: process.env.DB_PASSWORD || "@!Pass",
