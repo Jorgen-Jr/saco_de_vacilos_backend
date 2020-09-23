@@ -9,6 +9,11 @@ import { ApolloServer } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
 import { HelloResolver } from "./resolvers/Hello";
 import { UserResolver } from "./resolvers/User";
+import { FollowingRelationshipResolver } from "./resolvers/FollowingRelationship";
+import { PostResolver } from "./resolvers/Post";
+import { PostComment } from "./entities/PostComment";
+import { PostUserActionResolver } from "./resolvers/PostUserAction";
+import { UserSettingsResolver } from "./resolvers/UserSettings";
 
 const main = async () => {
   const orm = await MikroORM.init(mikroConfig);
@@ -16,7 +21,15 @@ const main = async () => {
 
   const apollo_server = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [HelloResolver, UserResolver],
+      resolvers: [
+        HelloResolver,
+        UserResolver,
+        FollowingRelationshipResolver,
+        PostResolver,
+        PostComment,
+        PostUserActionResolver,
+        UserSettingsResolver,
+      ],
       validate: false,
     }),
     context: () => ({ em: orm.em }),

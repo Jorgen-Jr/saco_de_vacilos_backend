@@ -14,9 +14,9 @@ export class Post {
   @Property({ type: "text" })
   content!: string;
 
-  @Field(() => Float32Array)
+  @Field(() => Number)
   @Property({ type: "float" })
-  initial_balance!: Float32Array;
+  initial_balance!: number;
 
   @Field(() => Number)
   @Property({ type: "float" })
