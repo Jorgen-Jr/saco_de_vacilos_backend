@@ -42,6 +42,16 @@ class UserResponse {
 
 @Resolver()
 export class UserResolver {
+  @Query(() => User, { nullable: true })
+  async me(@Ctx() { em, req }: MyContext) {
+    if (!req.session.user_id) {
+      return null;
+    }
+    const user = await em.findOne(User, { id: req.session.user_id });
+
+    return user;
+  }
+
   @Query(() => [User])
   users(@Ctx() { em }: MyContext): Promise<User[]> {
     return em.find(User, {});
@@ -60,7 +70,7 @@ export class UserResolver {
     @Arg("name") name: string,
     @Arg("email") email: string,
     @Arg("options") options: UsernamePasswordInput,
-    @Ctx() { em }: MyContext
+    @Ctx() { em, req }: MyContext
   ): Promise<UserResponse> {
     if (options.username.length <= 2) {
       return {
@@ -105,7 +115,23 @@ export class UserResolver {
       active: true,
     });
 
-    await em.persistAndFlush(user);
+    try {
+      await em.persistAndFlush(user);
+    } catch (err) {
+      if (err.code === "23505") {
+        return {
+          errors: [
+            {
+              field: "username",
+              message: "Username already taken",
+            },
+          ],
+        };
+      }
+      console.log(err.message);
+    }
+
+    req.session.user_id = user.id;
 
     return { user };
   }
@@ -114,7 +140,7 @@ export class UserResolver {
   async login(
     // @Arg("email", { nullable: true }) email: string,
     @Arg("options") options: UsernamePasswordInput,
-    @Ctx() { em }: MyContext
+    @Ctx() { em, req }: MyContext
   ): Promise<UserResponse> {
     const user = await em.findOne(User, { username: options.username });
 
@@ -140,6 +166,8 @@ export class UserResolver {
         ],
       };
     }
+
+    req.session.user_id = user.id;
 
     return { user };
   }
