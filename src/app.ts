@@ -1,6 +1,6 @@
 const express = require("express");
-const router = express.Router();
-const bodyParser = require("body-parser");
+// const router = express.Router();
+// const bodyParser = require("body-parser");
 const cors = require("cors");
 const app = express();
 
@@ -9,11 +9,16 @@ const app = express();
 // const connection = require("./config");
 
 //Usando as politicas de acesso do cors
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  })
+);
 
 //Permitir que a aplicação receba requisições em formato json
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+// app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded({ extended: false }));
 
 // //User Controllers
 // const UserController = require("./controllers/UserController");
@@ -91,6 +96,6 @@ if (process.env.NODE_ENV !== "production") {
 // router.post("/posts/userActions/:id", PostUserActions.store);
 // router.put("/posts/userActions/:id", PostUserActions.update);
 
-app.use("", router);
+// app.use("", router);
 
 export default app;

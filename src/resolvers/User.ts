@@ -77,7 +77,7 @@ export class UserResolver {
         errors: [
           {
             field: "username",
-            message: "Username must have at least 3 characters",
+            message: "Nome de usuário deve ter ao menos 3 caracteres",
           },
         ],
       };
@@ -87,8 +87,8 @@ export class UserResolver {
       return {
         errors: [
           {
-            field: "username",
-            message: "Password must have at least 6 characters",
+            field: "password",
+            message: "Senha deve ter ao menos 6 caracteres",
           },
         ],
       };
@@ -99,7 +99,7 @@ export class UserResolver {
         errors: [
           {
             field: "email",
-            message: "Must enter a valid email",
+            message: "E-mail precisa ser válido",
           },
         ],
       };
@@ -123,7 +123,7 @@ export class UserResolver {
           errors: [
             {
               field: "username",
-              message: "Username already taken",
+              message: "Nome de usuário indisponível",
             },
           ],
         };
@@ -149,7 +149,7 @@ export class UserResolver {
         errors: [
           {
             field: "username",
-            message: "User does not exits",
+            message: "Usuário não existe",
           },
         ],
       };
@@ -161,7 +161,7 @@ export class UserResolver {
         errors: [
           {
             field: "password",
-            message: "Incorrect password",
+            message: "Senha incorreta",
           },
         ],
       };

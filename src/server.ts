@@ -63,7 +63,7 @@ const main = async () => {
     })
   );
 
-  apollo_server.applyMiddleware({ app });
+  apollo_server.applyMiddleware({ app, cors: false });
 };
 
 main();
