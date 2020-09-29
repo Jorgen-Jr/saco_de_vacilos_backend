@@ -27,17 +27,23 @@ export class PostResolver {
 
   @Mutation(() => Post)
   async createPost(
-    @Arg("author") author: number,
     @Arg("guilty") guilty: number,
     @Arg("content") content: string,
     @Arg("initial_balance") initial_balance: number,
-    @Ctx() { em }: MyContext
+    @Ctx() { em, req }: MyContext
   ): Promise<Post> {
+    const user_id = req.session.user_id;
+    const actual_guilty = guilty || user_id;
+
     const post = em.create(Post, {
-      author,
-      guilty,
+      author: user_id,
+      guilty: actual_guilty,
       content,
       initial_balance,
+      deserved_count: 0,
+      undeserved_count: 0,
+      view_count: 0,
+      status: "U",
       active: true,
     });
 

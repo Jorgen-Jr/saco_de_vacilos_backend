@@ -1,4 +1,4 @@
-import { Entity, OneToOne, PrimaryKey, Property } from "@mikro-orm/core";
+import { Entity, ManyToOne, PrimaryKey, Property } from "@mikro-orm/core";
 import { ObjectType, Field } from "type-graphql";
 
 import { User } from "./User";
@@ -43,10 +43,10 @@ export class Post {
   updatedAt = new Date();
 
   @Field(() => User)
-  @OneToOne()
+  @ManyToOne()
   author: User;
 
   @Field(() => User)
-  @OneToOne()
+  @ManyToOne()
   guilty: User;
 }
