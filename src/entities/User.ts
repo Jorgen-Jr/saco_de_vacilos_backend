@@ -17,7 +17,7 @@ export class User {
   id!: number;
 
   @Field(() => String)
-  @Property({ unique: true })
+  @Property({ type: "text", unique: true })
   username!: string;
 
   @Field(() => String)
@@ -25,7 +25,7 @@ export class User {
   name!: string;
 
   @Field(() => String)
-  @Property({ unique: true })
+  @Property({ type: "text", unique: true })
   email!: string;
 
   @Property({ persist: false })
@@ -37,6 +37,14 @@ export class User {
   @Field(() => Boolean)
   @Property({ default: true })
   active!: Boolean;
+
+  @Field(() => String)
+  @Property({ nullable: true })
+  reset_password_token?: String;
+
+  @Field(() => Date)
+  @Property({ nullable: true })
+  reset_password_expires?: Date;
 
   @Field(() => Date)
   @Property({ type: "date" })

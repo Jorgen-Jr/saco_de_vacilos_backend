@@ -7,7 +7,6 @@ import {
   Arg,
   Ctx,
   Int,
-  InputType,
   Field,
   ObjectType,
 } from "type-graphql";
@@ -15,13 +14,10 @@ import {
 import argon2 from "argon2";
 import { COOKIE_NAME } from "./../constants";
 
-@InputType()
-class UsernamePasswordInput {
-  @Field()
-  username: string;
-  @Field()
-  password: string;
-}
+import { emailTemplate } from "./../util/emailTemplate";
+import { sendEmail } from "../util/sendEmail";
+import { UsernamePasswordInput } from "./UsernamePasswordInput";
+import { validateRegister } from "../util/validateRegister";
 
 @ObjectType()
 class FieldError {
@@ -68,50 +64,21 @@ export class UserResolver {
 
   @Mutation(() => UserResponse)
   async register(
-    @Arg("name") name: string,
-    @Arg("email") email: string,
     @Arg("options") options: UsernamePasswordInput,
     @Ctx() { em, req }: MyContext
   ): Promise<UserResponse> {
-    if (options.username.length <= 2) {
-      return {
-        errors: [
-          {
-            field: "username",
-            message: "Nome de usuário deve ter ao menos 3 caracteres",
-          },
-        ],
-      };
-    }
+    const errors = validateRegister(options);
 
-    if (options.password.length <= 6) {
-      return {
-        errors: [
-          {
-            field: "password",
-            message: "Senha deve ter ao menos 6 caracteres",
-          },
-        ],
-      };
-    }
-
-    if (!email) {
-      return {
-        errors: [
-          {
-            field: "email",
-            message: "E-mail precisa ser válido",
-          },
-        ],
-      };
+    if (errors) {
+      return { errors };
     }
 
     const password_hash = await argon2.hash(options.password);
 
     const user = em.create(User, {
       username: options.username,
-      name,
-      email,
+      name: options.name,
+      email: options.email,
       password_hash,
       active: true,
     });
@@ -119,7 +86,7 @@ export class UserResolver {
     try {
       await em.persistAndFlush(user);
     } catch (err) {
-      if (err.details.includes("already exists")) {
+      if (err?.details?.includes("already exists")) {
         return {
           errors: [
             {
@@ -140,10 +107,16 @@ export class UserResolver {
   @Mutation(() => UserResponse)
   async login(
     // @Arg("email", { nullable: true }) email: string,
-    @Arg("options") options: UsernamePasswordInput,
+    @Arg("usernameOrEmail") usernameOrEmail: string,
+    @Arg("password") password: string,
     @Ctx() { em, req }: MyContext
   ): Promise<UserResponse> {
-    const user = await em.findOne(User, { username: options.username });
+    const user = await em.findOne(
+      User,
+      usernameOrEmail.includes("@")
+        ? { email: usernameOrEmail }
+        : { username: usernameOrEmail }
+    );
 
     if (!user) {
       return {
@@ -155,7 +128,7 @@ export class UserResolver {
         ],
       };
     }
-    const valid = await argon2.verify(user.password_hash, options.password);
+    const valid = await argon2.verify(user.password_hash, password);
 
     if (!valid) {
       return {
@@ -222,5 +195,46 @@ export class UserResolver {
         resolve(true);
       })
     );
+  }
+
+  @Mutation(() => UserResponse)
+  async forgotPassword(
+    @Arg("email") email: string,
+    @Ctx() { em }: MyContext
+  ): Promise<UserResponse | boolean> {
+    const user = await em.findOne(User, { email });
+
+    if (!user) {
+      return {
+        errors: [
+          {
+            field: "email",
+            message: "Não existe usuário cadastrado com este email.",
+          },
+        ],
+      };
+    }
+
+    const token = await argon2.hash(new Date().toString());
+
+    user.reset_password_token = token;
+    user.reset_password_expires = new Date(Date.now() + 3600000 * 1);
+
+    const content = emailTemplate(
+      "http://localhost:3000/",
+      token,
+      "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftwibbon.blob.core.windows.net%2Ftwibbon%2F2015%2F182%2F35c55ac2-472a-4ffd-87ca-76199321c68c.png&f=1&nofb=1"
+    );
+
+    sendEmail(
+      '"Saco de Vacilos" <something@someon.eco>',
+      user.email,
+      "Recuperar Senha 🤦️",
+      content
+    );
+
+    em.persistAndFlush(user);
+
+    return true;
   }
 }
