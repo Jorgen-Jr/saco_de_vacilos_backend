@@ -5,50 +5,40 @@ import { PostUserAction } from "../entities/PostUserAction";
 @Resolver()
 export class PostUserActionResolver {
   @Query(() => [PostUserAction])
-  postUserActions(@Ctx() { em }: MyContext): Promise<PostUserAction[]> {
-    return em.find(PostUserAction, {});
+  postUserActions(): Promise<PostUserAction[]> {
+    return PostUserAction.find();
   }
 
   @Query(() => PostUserAction, { nullable: true })
   postUserAction(
-    @Arg("identifier", () => Int) id: number,
-    @Ctx() { em }: MyContext
-  ): Promise<PostUserAction | null> {
-    return em.findOne(PostUserAction, { id });
+    @Arg("identifier", () => Int) id: number
+  ): Promise<PostUserAction | undefined> {
+    return PostUserAction.findOne(id);
   }
 
   @Query(() => [PostUserAction])
-  userActionByPost(
-    @Arg("post") post: number,
-    @Ctx() { em }: MyContext
-  ): Promise<PostUserAction[]> {
-    return em.find(PostUserAction, { post });
+  userActionByPost(@Arg("post") post: number): Promise<PostUserAction[]> {
+    return PostUserAction.find({ where: { post } });
   }
 
   @Mutation(() => PostUserAction)
   async createUserAction(
     @Arg("author") author: number,
     @Arg("post") post: number,
-    @Arg("action") action: string,
-    @Ctx() { em }: MyContext
+    @Arg("action") action: string
   ): Promise<PostUserAction> {
-    const user_action = em.create(PostUserAction, {
+    const user_action = await PostUserAction.create({
       author,
       post,
       action,
-    });
-
-    await em.persistAndFlush(user_action);
+    }).save();
 
     return user_action;
   }
 
   @Mutation(() => Boolean)
-  async deleteUserAction(
-    @Arg("identifier") id: number,
-    @Ctx() { em }: MyContext
-  ): Promise<Boolean> {
-    await em.nativeDelete(PostUserAction, { id });
+  async deleteUserAction(@Arg("identifier") id: number): Promise<Boolean> {
+    await PostUserAction.delete(id);
 
     return true;
   }

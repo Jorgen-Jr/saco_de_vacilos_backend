@@ -1,44 +1,38 @@
 import { MyContext } from "../types";
 import { Resolver, Query, Mutation, Arg, Ctx, Int } from "type-graphql";
 import { PostComment } from "src/entities/PostComment";
+import { Post } from "src/entities/Post";
 
 @Resolver()
 export class PostCommentResolver {
   @Query(() => [PostComment])
-  comments(@Ctx() { em }: MyContext): Promise<PostComment[]> {
-    return em.find(PostComment, {});
+  comments(): Promise<PostComment[]> {
+    return PostComment.find();
   }
 
   @Query(() => PostComment, { nullable: true })
   comment(
-    @Arg("identifier", () => Int) id: number,
-    @Ctx() { em }: MyContext
-  ): Promise<PostComment | null> {
-    return em.findOne(PostComment, { id });
+    @Arg("identifier", () => Int) id: number
+  ): Promise<PostComment | undefined> {
+    return PostComment.findOne(id);
   }
 
   @Query(() => [PostComment])
-  commentsByPost(
-    @Arg("post") post: number,
-    @Ctx() { em }: MyContext
-  ): Promise<PostComment[]> {
-    return em.find(PostComment, { post });
+  commentsByPost(@Arg("post") post: number): Promise<PostComment[]> {
+    return PostComment.find({ where: { post } });
   }
 
   @Mutation(() => PostComment)
   async createComment(
     @Arg("author") author: number,
     @Arg("post") post: number,
-    @Arg("content") content: string,
-    @Ctx() { em }: MyContext
+    @Arg("content") content: string
   ): Promise<PostComment> {
-    const comment = em.create(PostComment, {
+    const comment = await PostComment.create({
       author,
       post,
       content,
-    });
-
-    await em.persistAndFlush(comment);
+    }).save();
 
     return comment;
   }
@@ -46,28 +40,22 @@ export class PostCommentResolver {
   @Mutation(() => PostComment, { nullable: true })
   async updatePost(
     @Arg("identifier") id: number,
-    @Arg("content") content: string,
-    @Ctx() { em }: MyContext
+    @Arg("content") content: string
   ): Promise<PostComment | null> {
-    const comment = await em.findOne(PostComment, { id });
+    const comment = await PostComment.findOne(id);
 
     if (!comment) {
       return null;
     }
 
-    comment.content = content || comment.content;
-
-    await em.persistAndFlush(comment);
+    PostComment.update({ id }, { content });
 
     return comment;
   }
 
   @Mutation(() => Boolean)
-  async deletePost(
-    @Arg("identifier") id: number,
-    @Ctx() { em }: MyContext
-  ): Promise<Boolean> {
-    await em.nativeDelete(PostComment, { id });
+  async deletePost(@Arg("identifier") id: number): Promise<Boolean> {
+    await PostComment.delete(id);
 
     return true;
   }

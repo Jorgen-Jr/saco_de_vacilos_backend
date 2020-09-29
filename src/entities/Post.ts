@@ -1,52 +1,64 @@
-import { Entity, ManyToOne, PrimaryKey, Property } from "@mikro-orm/core";
+import {
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from "typeorm";
 import { ObjectType, Field } from "type-graphql";
 
 import { User } from "./User";
 
 @ObjectType()
 @Entity()
-export class Post {
+export class Post extends BaseEntity {
   @Field(() => String)
-  @PrimaryKey()
+  @PrimaryGeneratedColumn()
   id!: number;
 
   @Field(() => String)
-  @Property({ type: "text" })
+  @Column({ type: "text" })
   content!: string;
 
   @Field(() => Number)
-  @Property({ type: "float" })
+  @Column({ type: "float" })
   initial_balance!: number;
 
   @Field(() => Number)
-  @Property({ type: "float" })
+  @Column({ type: "float" })
   deserved_count: Number;
 
   @Field(() => Number)
-  @Property({ type: "float" })
+  @Column({ type: "float" })
   undeserved_count: Number;
 
   @Field(() => Number)
-  @Property()
+  @Column()
   view_count: Number;
 
   @Field(() => String)
-  @Property()
+  @Column()
   status!: String;
 
-  @Field(() => Date)
-  @Property({ type: "date" })
-  createdAt = new Date();
+  @Field(() => Boolean)
+  @Column({ default: true })
+  active!: Boolean;
 
   @Field(() => Date)
-  @Property({ type: "date", onUpdate: () => new Date() })
-  updatedAt = new Date();
+  @CreateDateColumn()
+  createdAt = Date;
+
+  @Field(() => Date)
+  @UpdateDateColumn()
+  updatedAt = Date;
 
   @Field(() => User)
-  @ManyToOne()
+  @ManyToOne((type) => User)
   author: User;
 
   @Field(() => User)
-  @ManyToOne()
+  @ManyToOne((type) => User)
   guilty: User;
 }

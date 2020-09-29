@@ -1,46 +1,43 @@
 import { FollowingRelationship } from "../entities/FollowingRelationship";
 import { MyContext } from "../types";
 import { Resolver, Query, Mutation, Arg, Ctx, Int } from "type-graphql";
+import { User } from "src/entities/User";
 
 @Resolver()
 export class FollowingRelationshipResolver {
   @Query(() => [FollowingRelationship])
-  indexfollowingrelationship(
-    @Ctx() { em }: MyContext
-  ): Promise<FollowingRelationship[]> {
-    return em.find(FollowingRelationship, {});
+  indexfollowingrelationship(): Promise<FollowingRelationship[]> {
+    return FollowingRelationship.find();
   }
 
   @Query(() => FollowingRelationship, { nullable: true })
   following(
-    @Arg("user", () => Int) id: number,
-    @Ctx() { em }: MyContext
-  ): Promise<FollowingRelationship | null> {
-    return em.findOne(FollowingRelationship, { user: id });
+    @Arg("user", () => Int) id: number
+  ): Promise<FollowingRelationship | undefined> {
+    return FollowingRelationship.findOne(id);
   }
 
   @Query(() => [FollowingRelationship], { nullable: true })
   followers(
-    @Arg("user", () => Int) id: number,
-    @Ctx() { em }: MyContext
+    @Arg("user", () => Int) id: number
   ): Promise<FollowingRelationship[] | null> {
-    return em.find(FollowingRelationship, { following: id });
+    return FollowingRelationship.find({ where: { following: id } });
   }
 
   @Mutation(() => FollowingRelationship)
   async follow(
-    @Arg("user") user: number,
-    @Arg("follow") follow: number,
-    @Ctx() { em }: MyContext
+    @Arg("user") user_id: number,
+    @Arg("follow") follow: number
   ): Promise<FollowingRelationship> {
-    const following_relationshipt = em.create(FollowingRelationship, {
+    const user = await User.find({ id: user_id });
+    const following = await User.find({ id: follow });
+
+    const following_relationship = FollowingRelationship.create({
+      following,
       user,
-      following: follow,
     });
 
-    await em.persistAndFlush(following_relationshipt);
-
-    return following_relationshipt;
+    return following_relationship;
   }
 
   @Mutation(() => Boolean)

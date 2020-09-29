@@ -1,28 +1,36 @@
-import { Entity, OneToOne, PrimaryKey, Property } from "@mikro-orm/core";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+  BaseEntity,
+} from "typeorm";
 import { ObjectType, Field } from "type-graphql";
 
 import { User } from "./User";
 
 @ObjectType()
 @Entity()
-export class FollowingRelationship {
+export class FollowingRelationship extends BaseEntity {
   @Field(() => String)
-  @PrimaryKey()
+  @PrimaryGeneratedColumn()
   id!: number;
 
   @Field(() => User)
-  @OneToOne()
+  @OneToOne((type) => User)
   user: User;
 
   @Field(() => User)
-  @OneToOne()
+  @OneToOne((type) => User)
   following: User;
 
   @Field(() => Date)
-  @Property({ type: "date" })
-  createdAt = new Date();
+  @CreateDateColumn()
+  createdAt = Date;
 
   @Field(() => Date)
-  @Property({ type: "date", onUpdate: () => new Date() })
-  updatedAt = new Date();
+  @UpdateDateColumn()
+  updatedAt = Date;
 }

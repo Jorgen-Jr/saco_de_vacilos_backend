@@ -1,51 +1,45 @@
-import {
-  Collection,
-  Entity,
-  ManyToMany,
-  PrimaryKey,
-  Property,
-} from "@mikro-orm/core";
 import { ObjectType, Field } from "type-graphql";
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 import { Role } from "./Role";
 
 @ObjectType()
 @Entity()
-export class User {
+export class User  extends BaseEntity  {
   @Field(() => String)
-  @PrimaryKey()
+  @PrimaryGeneratedColumn()
   id!: number;
 
   @Field(() => String)
-  @Property({ type: "text", unique: true })
+  @Column({unique: true })
   username!: string;
 
   @Field(() => String)
-  @Property()
+  @Column()
   name!: string;
 
   @Field(() => String)
-  @Property({ type: "text", unique: true })
+  @Column({ unique: true })
   email!: string;
 
-  @Property({ persist: false })
   password!: string;
 
-  @Property()
+  @Column()
   password_hash!: string;
 
   @Field(() => Boolean)
-  @Property({ default: true })
+  @Column({ default: true })
   active!: Boolean;
 
   @Field(() => Date)
-  @Property({ type: "date" })
-  createdAt = new Date();
+  @CreateDateColumn()
+  createdAt = Date;
 
   @Field(() => Date)
-  @Property({ type: "date", onUpdate: () => new Date() })
-  updatedAt = new Date();
+  @UpdateDateColumn()
+  updatedAt = Date;
 
-  @ManyToMany(() => Role, "users", { owner: true })
-  roles = new Collection<Role>(this);
+  @ManyToMany(type=> Role)
+  @JoinTable()
+  roles = Role[];
 }

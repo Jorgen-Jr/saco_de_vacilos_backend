@@ -1,29 +1,50 @@
-//Referenciar as controllers (Rotas da api)
 import app from "./app";
-import "reflect-metadata";
-import { MikroORM } from "@mikro-orm/core";
-import mikroConfig from "./mikro-orm.config";
-
-import { ApolloServer } from "apollo-server-express";
-
-import { buildSchema } from "type-graphql";
-import { HelloResolver } from "./resolvers/Hello";
-import { UserResolver } from "./resolvers/User";
-import { FollowingRelationshipResolver } from "./resolvers/FollowingRelationship";
-import { PostResolver } from "./resolvers/Post";
-import { PostComment } from "./entities/PostComment";
-import { PostUserActionResolver } from "./resolvers/PostUserAction";
-import { UserSettingsResolver } from "./resolvers/UserSettings";
-
-import Redis from "ioredis";
-import session from "express-session";
 
 import connectRedis from "connect-redis";
+import session from "express-session";
+import Redis from "ioredis";
+import "reflect-metadata";
+
+import { buildSchema } from "type-graphql";
+
 import { COOKIE_NAME, __prod__ } from "./constants";
+import { PostComment } from "./entities/PostComment";
+
+import { FollowingRelationshipResolver } from "./resolvers/FollowingRelationship";
+import { HelloResolver } from "./resolvers/Hello";
+import { PostResolver } from "./resolvers/Post";
+import { PostUserActionResolver } from "./resolvers/PostUserAction";
+import { UserResolver } from "./resolvers/User";
+import { UserSettingsResolver } from "./resolvers/UserSettings";
+
+import { createConnection } from "typeorm";
+
+import { ApolloServer } from "apollo-server-express";
+import { UserSettings } from "./entities/UserSettings";
+import { UserProfile } from "./entities/UserProfile";
+import { PostUserAction } from "./entities/PostUserAction";
+import { Post } from "./entities/Post";
+import { FollowingRelationship } from "./entities/FollowingRelationship";
+import { Role } from "./entities/Role";
+import { User } from "./entities/User";
 
 const main = async () => {
-  const orm = await MikroORM.init(mikroConfig);
-  orm.getMigrator().up();
+  const conn = await createConnection({
+    type: "postgres",
+    database: "db_vacilo",
+    logging: true,
+    synchronize: true,
+    entities: [
+      User,
+      Role,
+      FollowingRelationship,
+      Post,
+      PostComment,
+      PostUserAction,
+      UserProfile,
+      UserSettings,
+    ],
+  });
 
   const RedisStore = connectRedis(session);
   const redis = new Redis();
@@ -41,7 +62,7 @@ const main = async () => {
       ],
       validate: false,
     }),
-    context: ({ req, res }) => ({ em: orm.em, req, res, redis }),
+    context: ({ req, res }) => ({ req, res, redis }),
   });
 
   app.use(
