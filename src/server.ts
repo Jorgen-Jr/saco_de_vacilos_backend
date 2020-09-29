@@ -15,7 +15,7 @@ import { PostComment } from "./entities/PostComment";
 import { PostUserActionResolver } from "./resolvers/PostUserAction";
 import { UserSettingsResolver } from "./resolvers/UserSettings";
 
-import redis from "redis";
+import Redis from "ioredis";
 import session from "express-session";
 
 import connectRedis from "connect-redis";
@@ -24,6 +24,9 @@ import { COOKIE_NAME, __prod__ } from "./constants";
 const main = async () => {
   const orm = await MikroORM.init(mikroConfig);
   orm.getMigrator().up();
+
+  const RedisStore = connectRedis(session);
+  const redis = new Redis();
 
   const apollo_server = new ApolloServer({
     schema: await buildSchema({
@@ -38,18 +41,15 @@ const main = async () => {
       ],
       validate: false,
     }),
-    context: ({ req, res }) => ({ em: orm.em, req, res }),
+    context: ({ req, res }) => ({ em: orm.em, req, res, redis }),
   });
-
-  const RedisStore = connectRedis(session);
-  const redisClient = redis.createClient({});
 
   app.use(
     session({
       name: COOKIE_NAME,
       store: new RedisStore({
         disableTouch: true,
-        client: redisClient,
+        client: redis,
       }),
       cookie: {
         maxAge: 1000 * 60 * 60 * 24 * 365 * 10, // 10 years

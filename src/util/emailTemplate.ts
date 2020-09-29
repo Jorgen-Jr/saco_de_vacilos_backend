@@ -22,14 +22,14 @@ export const emailTemplate = (
     '<!-- BULLETPROOF BUTTON --><tr><td bgcolor="#ffffff" align="left"><table width="100%" border="0" cellspacing="0" cellpadding="0"><tr><td bgcolor="#ffffff" align="center" style="padding: 20px 30px 60px 30px;"><table border="0" cellspacing="0" cellpadding="0"><tr><td align="center" style="border-radius: 3px;" bgcolor="#7c72dc">' +
     '<a href="' +
     base_url +
-    "/Resetar/" +
+    "/change-password/" +
     token +
     '" target="_blank" style="font-size: 20px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; color: #ffffff; text-decoration: none; padding: 15px 25px; border-radius: 2px; border: 1px solid #7c72dc; display: inline-block;">Resetar Senha</a></td></tr></table></td></tr></table></td></tr></table></td></tr>' +
     '<!-- COPY CALLOUT --><tr><td bgcolor="#f4f4f4" align="center" style="padding: 0px 10px 0px 10px;"><table border="0" cellpadding="0" cellspacing="0" width="480" ><!-- HEADLINE --><tr><td bgcolor="#111111" align="left" style="padding: 40px 30px 20px 30px; color: #ffffff; font-family: "Lato", Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;" ><h2 style="font-size: 24px; font-weight: 400; margin: 0;">O botão não funciona?</h2></td></tr><!-- COPY --><tr><td bgcolor="#111111" align="left" style="padding: 0px 30px 20px 30px; color: #666666; font-family: "Lato", Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;" ><p style="margin: 0;">Sem problemas! Você pode clicar no link abaixo ou copiar e colar ele no seu navegador.</p></td></tr>' +
     '<!-- COPY --><tr><td bgcolor="#111111" align="left" style="padding: 0px 30px 40px 30px; border-radius: 0px 0px 4px 4px; color: #666666; font-family: "Lato", Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;" ><p style="margin: 0;">' +
     '<a href="' +
     base_url +
-    "/Resetar/" +
+    "/change-password/" +
     token +
     '" target="_blank" style="color: #7c72dc;">Clique aqui para seguir com instruções de reset de senha</a></p></td></tr></table></td></tr><!-- FOOTER --><tr><td bgcolor="#f4f4f4" align="center" style="padding: 0px 10px 0px 10px;"><table border="0" cellpadding="0" cellspacing="0" width="480" ><!-- PERMISSION REMINDER --><tr><td bgcolor="#f4f4f4" align="left" style="padding: 0px 30px 30px 30px; color: #666666; font-family: "Lato", Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 400; line-height: 18px;" ><p style="margin: 0;">Você está recebendo este e-mail porque solicitou uma nova senha, se não por favor contate o administrador.</p></td></tr></table></body></html>'
   );

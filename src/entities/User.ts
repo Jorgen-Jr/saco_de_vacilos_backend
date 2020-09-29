@@ -38,14 +38,6 @@ export class User {
   @Property({ default: true })
   active!: Boolean;
 
-  @Field(() => String)
-  @Property({ nullable: true })
-  reset_password_token?: String;
-
-  @Field(() => Date)
-  @Property({ nullable: true })
-  reset_password_expires?: Date;
-
   @Field(() => Date)
   @Property({ type: "date" })
   createdAt = new Date();

@@ -12,12 +12,14 @@ import {
 } from "type-graphql";
 
 import argon2 from "argon2";
-import { COOKIE_NAME } from "./../constants";
+import { COOKIE_NAME, FORGET_PASSWORD_PREFIX } from "./../constants";
 
 import { emailTemplate } from "./../util/emailTemplate";
 import { sendEmail } from "../util/sendEmail";
 import { UsernamePasswordInput } from "./UsernamePasswordInput";
 import { validateRegister } from "../util/validateRegister";
+
+import { v4 } from "uuid";
 
 @ObjectType()
 class FieldError {
@@ -201,7 +203,7 @@ export class UserResolver {
   @Mutation(() => UserResponse)
   async forgotPassword(
     @Arg("email") email: string,
-    @Ctx() { em }: MyContext
+    @Ctx() { em, redis }: MyContext
   ): Promise<UserResponse | boolean> {
     const user = await em.findOne(User, { email });
 
@@ -216,13 +218,17 @@ export class UserResolver {
       };
     }
 
-    const token = await argon2.hash(new Date().toString());
+    const token = v4();
 
-    user.reset_password_token = token;
-    user.reset_password_expires = new Date(Date.now() + 3600000 * 1);
+    await redis.set(
+      FORGET_PASSWORD_PREFIX + token,
+      user.id,
+      "ex",
+      1000 * 60 * 60 * 24 * 3
+    ); //Three days
 
     const content = emailTemplate(
-      "http://localhost:3000/",
+      "http://localhost:3000",
       token,
       "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftwibbon.blob.core.windows.net%2Ftwibbon%2F2015%2F182%2F35c55ac2-472a-4ffd-87ca-76199321c68c.png&f=1&nofb=1"
     );
