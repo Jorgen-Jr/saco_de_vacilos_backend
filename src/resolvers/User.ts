@@ -106,7 +106,6 @@ export class UserResolver {
 
   @Mutation(() => UserResponse)
   async login(
-    // @Arg("email", { nullable: true }) email: string,
     @Arg("usernameOrEmail") usernameOrEmail: string,
     @Arg("password") password: string,
     @Ctx() { em, req }: MyContext
@@ -122,8 +121,10 @@ export class UserResolver {
       return {
         errors: [
           {
-            field: "username",
-            message: "Usuário não existe",
+            field: "usernameOrEmail",
+            message:
+              "Não foi encontrato um usuário com este " +
+              (usernameOrEmail.includes("@") ? "email." : "nome."),
           },
         ],
       };
