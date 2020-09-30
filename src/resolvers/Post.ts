@@ -26,7 +26,7 @@ class PostInput {
 export class PostResolver {
   @Query(() => [Post])
   posts(): Promise<Post[]> {
-    return Post.find();
+    return Post.find({ order: { updatedAt: "DESC" } });
   }
 
   @Query(() => Post, { nullable: true })
