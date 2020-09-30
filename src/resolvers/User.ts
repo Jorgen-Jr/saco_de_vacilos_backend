@@ -57,7 +57,7 @@ export class UserResolver {
   }
 
   @Query(() => User, { nullable: true })
-  user(@Arg("identifier", () => Int) id: number): Promise<User | null> {
+  user(@Arg("identifier", () => Int) id: number): Promise<User | undefined> {
     return User.findOne(id);
   }
 

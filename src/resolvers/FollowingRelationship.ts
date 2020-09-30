@@ -29,8 +29,8 @@ export class FollowingRelationshipResolver {
     @Arg("user") user_id: number,
     @Arg("follow") follow: number
   ): Promise<FollowingRelationship> {
-    const user = await User.find({ id: user_id });
-    const following = await User.find({ id: follow });
+    const user = await User.findOne({ id: user_id });
+    const following = await User.findOne({ id: follow });
 
     const following_relationship = FollowingRelationship.create({
       following,
@@ -41,15 +41,8 @@ export class FollowingRelationshipResolver {
   }
 
   @Mutation(() => Boolean)
-  async unfollow(
-    @Arg("user") id: number,
-    @Arg("following") following_id: number,
-    @Ctx() { em }: MyContext
-  ): Promise<Boolean> {
-    await em.nativeDelete(FollowingRelationship, {
-      id,
-      following: following_id,
-    });
+  async unfollow(@Arg("identifier") user_id: number): Promise<Boolean> {
+    await FollowingRelationship.delete(user_id);
 
     return true;
   }

@@ -2,6 +2,7 @@ import { MyContext } from "../types";
 import { Resolver, Query, Mutation, Arg, Ctx, Int } from "type-graphql";
 import { PostComment } from "src/entities/PostComment";
 import { Post } from "src/entities/Post";
+import { User } from "src/entities/User";
 
 @Resolver()
 export class PostCommentResolver {
@@ -24,10 +25,14 @@ export class PostCommentResolver {
 
   @Mutation(() => PostComment)
   async createComment(
-    @Arg("author") author: number,
-    @Arg("post") post: number,
-    @Arg("content") content: string
+    @Arg("post") post_id: number,
+    @Arg("content") content: string,
+    @Ctx() { req }: MyContext
   ): Promise<PostComment> {
+    const author = await User.findOne(req.session.user_id);
+
+    const post = await Post.findOne(post_id);
+
     const comment = await PostComment.create({
       author,
       post,
@@ -41,11 +46,11 @@ export class PostCommentResolver {
   async updatePost(
     @Arg("identifier") id: number,
     @Arg("content") content: string
-  ): Promise<PostComment | null> {
+  ): Promise<PostComment | undefined> {
     const comment = await PostComment.findOne(id);
 
     if (!comment) {
-      return null;
+      return undefined;
     }
 
     PostComment.update({ id }, { content });

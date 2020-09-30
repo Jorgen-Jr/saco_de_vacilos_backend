@@ -5,32 +5,28 @@ import { UserSettings } from "../entities/UserSettings";
 @Resolver()
 export class UserSettingsResolver {
   @Query(() => [UserSettings])
-  usersProfile(@Ctx() { em }: MyContext): Promise<UserSettings[]> {
-    return em.find(UserSettings, {});
+  usersProfile(): Promise<UserSettings[]> {
+    return UserSettings.find();
   }
 
   @Query(() => UserSettings, { nullable: true })
   userProfile(
-    @Arg("identifier", () => Int) user: number,
-    @Ctx() { em }: MyContext
-  ): Promise<UserSettings | null> {
-    return em.findOne(UserSettings, { user });
+    @Arg("identifier", () => Int) user: number
+  ): Promise<UserSettings | undefined> {
+    return UserSettings.findOne(user);
   }
 
   @Mutation(() => UserSettings)
   async createUserSettings(
     @Arg("notification_comments") notification_comments: Boolean,
     @Arg("notification_follower") notification_follower: Boolean,
-    @Arg("notification_mentions") notification_mentions: Boolean,
-    @Ctx() { em }: MyContext
+    @Arg("notification_mentions") notification_mentions: Boolean
   ): Promise<UserSettings> {
-    const user_settings = em.create(UserSettings, {
+    const user_settings = UserSettings.create({
       notification_comments,
       notification_follower,
       notification_mentions,
-    });
-
-    await em.persistAndFlush(user_settings);
+    }).save();
 
     return user_settings;
   }
@@ -43,20 +39,19 @@ export class UserSettingsResolver {
     @Arg("notification_follower", { nullable: true })
     notification_follower: boolean,
     @Arg("notification_mentions", { nullable: true })
-    notification_mentions: boolean,
-    @Ctx() { em }: MyContext
-  ): Promise<UserSettings | null> {
-    const user_settings = await em.findOne(UserSettings, { user });
+    notification_mentions: boolean
+  ): Promise<UserSettings | undefined> {
+    const user_settings = await UserSettings.findOne(user);
 
     if (!user_settings) {
-      return null;
+      return undefined;
     }
 
     user_settings.notification_comments = notification_comments;
     user_settings.notification_follower = notification_follower;
     user_settings.notification_mentions = notification_mentions;
 
-    await em.persistAndFlush(user_settings);
+    await user_settings.save();
 
     return user_settings;
   }

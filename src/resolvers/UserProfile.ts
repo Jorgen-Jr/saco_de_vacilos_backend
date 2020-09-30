@@ -5,32 +5,28 @@ import { UserProfile } from "src/entities/UserProfile";
 @Resolver()
 export class UserProfileResolver {
   @Query(() => [UserProfile])
-  usersProfiles(@Ctx() { em }: MyContext): Promise<UserProfile[]> {
-    return em.find(UserProfile, {});
+  usersProfiles(): Promise<UserProfile[]> {
+    return UserProfile.find();
   }
 
   @Query(() => UserProfile, { nullable: true })
   userProfile(
-    @Arg("identifier", () => Int) user: number,
-    @Ctx() { em }: MyContext
-  ): Promise<UserProfile | null> {
-    return em.findOne(UserProfile, { user });
+    @Arg("identifier", () => Int) user: number
+  ): Promise<UserProfile | undefined> {
+    return UserProfile.findOne();
   }
 
   @Mutation(() => UserProfile)
   async createUserProfile(
     @Arg("surname") surname: string,
     @Arg("bio") bio: string,
-    @Arg("profile_picture") profile_picture: string,
-    @Ctx() { em }: MyContext
+    @Arg("profile_picture") profile_picture: string
   ): Promise<UserProfile> {
-    const user = em.create(UserProfile, {
+    const user = UserProfile.create({
       surname,
       bio,
       profile_picture,
-    });
-
-    await em.persistAndFlush(user);
+    }).save();
 
     return user;
   }
@@ -40,13 +36,12 @@ export class UserProfileResolver {
     @Arg("id") id: number,
     @Arg("surname", { nullable: true }) surname: string,
     @Arg("bio", { nullable: true }) bio: string,
-    @Arg("profile_picture", { nullable: true }) profile_picture: string,
-    @Ctx() { em }: MyContext
-  ): Promise<UserProfile | null> {
-    const user_profile = await em.findOne(UserProfile, { id });
+    @Arg("profile_picture", { nullable: true }) profile_picture: string
+  ): Promise<UserProfile | undefined> {
+    const user_profile = await UserProfile.findOne(id);
 
     if (!user_profile) {
-      return null;
+      return undefined;
     }
 
     user_profile.surname = surname || user_profile.surname;
@@ -54,7 +49,7 @@ export class UserProfileResolver {
     user_profile.profile_picture =
       profile_picture || user_profile.profile_picture;
 
-    await em.persistAndFlush(user_profile);
+    await user_profile.save();
 
     return user_profile;
   }
