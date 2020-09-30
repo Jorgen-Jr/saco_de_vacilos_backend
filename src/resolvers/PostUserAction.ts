@@ -1,8 +1,8 @@
 import { MyContext } from "../types";
 import { Resolver, Query, Mutation, Arg, Ctx, Int } from "type-graphql";
 import { PostUserAction } from "../entities/PostUserAction";
-import { User } from "src/entities/User";
-import { Post } from "src/entities/Post";
+import { User } from "../entities/User";
+import { Post } from "../entities/Post";
 
 @Resolver()
 export class PostUserActionResolver {
@@ -25,7 +25,6 @@ export class PostUserActionResolver {
 
   @Mutation(() => PostUserAction)
   async createUserAction(
-    @Arg("author") author_id: number,
     @Arg("post") post_id: number,
     @Arg("action") action: string,
     @Ctx() { req }: MyContext

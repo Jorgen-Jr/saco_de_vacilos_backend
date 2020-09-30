@@ -1,7 +1,6 @@
 import { FollowingRelationship } from "../entities/FollowingRelationship";
-import { MyContext } from "../types";
-import { Resolver, Query, Mutation, Arg, Ctx, Int } from "type-graphql";
-import { User } from "src/entities/User";
+import { Resolver, Query, Mutation, Arg, Int } from "type-graphql";
+import { User } from "../entities/User";
 
 @Resolver()
 export class FollowingRelationshipResolver {

@@ -29,9 +29,11 @@ import { Role } from "./entities/Role";
 import { User } from "./entities/User";
 
 const main = async () => {
-  const conn = await createConnection({
+  await createConnection({
     type: "postgres",
     database: "db_vacilo",
+    username: process.env.DB_USER || "root",
+    password: process.env.DB_PASSWORD || "@!Pass",
     logging: true,
     synchronize: true,
     entities: [

@@ -31,13 +31,13 @@ export class UserSettings extends BaseEntity {
 
   @Field(() => Date)
   @CreateDateColumn()
-  createdAt = Date;
+  createdAt: Date;
 
   @Field(() => Date)
   @UpdateDateColumn()
-  updatedAt = Date;
+  updatedAt: Date;
 
   @Field(() => User)
-  @OneToOne((type) => User)
+  @OneToOne(() => User)
   user: User;
 }

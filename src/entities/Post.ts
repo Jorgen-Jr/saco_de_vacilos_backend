@@ -48,17 +48,17 @@ export class Post extends BaseEntity {
 
   @Field(() => Date)
   @CreateDateColumn()
-  createdAt = Date;
+  createdAt: Date;
 
   @Field(() => Date)
   @UpdateDateColumn()
-  updatedAt = Date;
+  updatedAt: Date;
 
   @Field(() => User)
-  @ManyToOne((type) => User)
+  @ManyToOne(() => User)
   author: User;
 
   @Field(() => User)
-  @ManyToOne((type) => User)
+  @ManyToOne(() => User)
   guilty: User;
 }

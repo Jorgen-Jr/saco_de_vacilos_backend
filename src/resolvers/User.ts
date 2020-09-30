@@ -74,7 +74,7 @@ export class UserResolver {
 
     const password_hash = await argon2.hash(options.password);
 
-    const user = User.create({
+    const user = await User.create({
       username: options.username,
       name: options.name,
       email: options.email,
@@ -83,7 +83,7 @@ export class UserResolver {
     });
 
     try {
-      user.save();
+      await user.save();
     } catch (err) {
       if (err?.details?.includes("already exists")) {
         return {
@@ -235,7 +235,7 @@ export class UserResolver {
       content
     );
 
-    user.save();
+    await user.save();
 
     return true;
   }
@@ -286,7 +286,7 @@ export class UserResolver {
 
     user.password_hash = await argon2.hash(password);
 
-    user.save();
+    await user.save();
 
     req.session.user_id = user.id;
 

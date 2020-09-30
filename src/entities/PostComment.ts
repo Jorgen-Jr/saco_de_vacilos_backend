@@ -6,24 +6,25 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
   ManyToOne,
-  OneToOne,, BaseEntity
+  OneToOne,
+  BaseEntity,
 } from "typeorm";
 import { Post } from "./Post";
 import { User } from "./User";
 
 @ObjectType()
 @Entity()
-export class PostComment  extends BaseEntity {
+export class PostComment extends BaseEntity {
   @Field(() => String)
   @PrimaryGeneratedColumn()
   id!: number;
 
   @Field(() => Post)
-  @ManyToOne((type) => Post)
+  @ManyToOne(() => Post)
   post: Post;
 
   @Field(() => User)
-  @OneToOne((type) => User)
+  @OneToOne(() => User)
   author: User;
 
   @Field(() => String)
@@ -32,9 +33,9 @@ export class PostComment  extends BaseEntity {
 
   @Field(() => Date)
   @CreateDateColumn()
-  createdAt = Date;
+  createdAt: Date;
 
   @Field(() => Date)
   @UpdateDateColumn()
-  updatedAt = Date;
+  updatedAt: Date;
 }

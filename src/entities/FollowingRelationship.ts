@@ -1,5 +1,4 @@
 import {
-  Column,
   CreateDateColumn,
   Entity,
   OneToOne,
@@ -19,18 +18,18 @@ export class FollowingRelationship extends BaseEntity {
   id!: number;
 
   @Field(() => User)
-  @OneToOne((type) => User)
+  @OneToOne(() => User)
   user: User;
 
   @Field(() => User)
-  @OneToOne((type) => User)
+  @OneToOne(() => User)
   following: User;
 
   @Field(() => Date)
   @CreateDateColumn()
-  createdAt = Date;
+  createdAt: Date;
 
   @Field(() => Date)
   @UpdateDateColumn()
-  updatedAt = Date;
+  updatedAt: Date;
 }

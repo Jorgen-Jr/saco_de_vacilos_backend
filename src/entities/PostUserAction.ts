@@ -19,11 +19,11 @@ export class PostUserAction extends BaseEntity {
   id!: number;
 
   @Field(() => Post)
-  @OneToOne((type) => Post)
+  @OneToOne(() => Post)
   post: Post;
 
   @Field(() => User)
-  @OneToOne((type) => User)
+  @OneToOne(() => User)
   author: User;
 
   @Field(() => String)
@@ -32,9 +32,9 @@ export class PostUserAction extends BaseEntity {
 
   @Field(() => Date)
   @CreateDateColumn()
-  createdAt = Date;
+  createdAt: Date;
 
   @Field(() => Date)
   @UpdateDateColumn()
-  updatedAt = Date;
+  updatedAt: Date;
 }
