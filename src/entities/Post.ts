@@ -46,6 +46,22 @@ export class Post extends BaseEntity {
   @Column({ default: true })
   active!: Boolean;
 
+  @Field()
+  @Column()
+  authorId: number;
+
+  @Field(() => User)
+  @ManyToOne(() => User, (user) => user.posts)
+  author: User;
+
+  @Field()
+  @Column()
+  guiltyId: number;
+
+  @Field(() => User)
+  @ManyToOne(() => User, (guilty) => guilty.guiltyPosts)
+  guilty: User;
+
   @Field(() => Date)
   @CreateDateColumn()
   createdAt: Date;
@@ -53,12 +69,4 @@ export class Post extends BaseEntity {
   @Field(() => Date)
   @UpdateDateColumn()
   updatedAt: Date;
-
-  @Field(() => User)
-  @ManyToOne(() => User)
-  author: User;
-
-  @Field(() => User)
-  @ManyToOne(() => User)
-  guilty: User;
 }

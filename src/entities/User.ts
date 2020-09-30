@@ -1,3 +1,4 @@
+import { OneToMany } from "@mikro-orm/core";
 import { ObjectType, Field } from "type-graphql";
 import {
   BaseEntity,
@@ -7,6 +8,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
+import { Post } from "./Post";
 
 @ObjectType()
 @Entity()
@@ -43,6 +45,14 @@ export class User extends BaseEntity {
   @Field(() => Date)
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @Field(() => [Post])
+  @OneToMany(() => Post, (post) => post.author)
+  posts: Post[];
+
+  @Field(() => [Post])
+  @OneToMany(() => Post, (post) => post.guilty)
+  guiltyPosts: Post[];
 
   // @ManyToMany(typeof Role)
   // @JoinTable()

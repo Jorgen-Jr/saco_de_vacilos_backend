@@ -10,8 +10,7 @@
     "start2": "node dist/server.js",
     "dev": "nodemon src/server.ts",
     "dev2": "nodemon dist/server.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "create:migration": "mikro-orm migration:create"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "Jorge Antônio da Silva Nascimento Junior",

@@ -19,8 +19,12 @@ export class PostComment extends BaseEntity {
   @PrimaryGeneratedColumn()
   id!: number;
 
+  @Field()
+  @Column()
+  postId: number;
+
   @Field(() => Post)
-  @ManyToOne(() => Post)
+  @ManyToOne(() => Post, (post) => post.id)
   post: Post;
 
   @Field(() => User)
