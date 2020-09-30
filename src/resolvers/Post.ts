@@ -1,6 +1,26 @@
 import { MyContext } from "../types";
-import { Resolver, Query, Mutation, Arg, Ctx, Int } from "type-graphql";
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Arg,
+  Ctx,
+  Int,
+  InputType,
+  Field,
+  UseMiddleware,
+} from "type-graphql";
 import { Post } from "../entities/Post";
+import { isAuth } from "../middleware/isAuth";
+
+@InputType()
+class PostInput {
+  @Field()
+  content: string;
+
+  @Field()
+  initial_balance: number;
+}
 
 @Resolver()
 export class PostResolver {
@@ -20,20 +40,19 @@ export class PostResolver {
   }
 
   @Mutation(() => Post)
+  @UseMiddleware(isAuth)
   async createPost(
-    @Arg("guilty") guilty: number,
-    @Arg("content") content: string,
-    @Arg("initial_balance") initial_balance: number,
+    @Arg("input") input: PostInput,
+    @Arg("guilty", { nullable: true }) guilty: number,
     @Ctx() { req }: MyContext
   ): Promise<Post> {
     const user_id = req.session.user_id;
     const actual_guilty = guilty || user_id;
 
     const post = await Post.create({
-      author: user_id,
-      guilty: actual_guilty,
-      content,
-      initial_balance,
+      ...input,
+      authorId: user_id,
+      guiltyId: actual_guilty,
       deserved_count: 0,
       undeserved_count: 0,
       view_count: 0,

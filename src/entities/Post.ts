@@ -23,19 +23,19 @@ export class Post extends BaseEntity {
   content!: string;
 
   @Field(() => Number)
-  @Column({ type: "float" })
+  @Column({ type: "float", default: 0 })
   initial_balance!: number;
 
   @Field(() => Number)
-  @Column({ type: "float" })
+  @Column({ type: "int", default: 0 })
   deserved_count: Number;
 
   @Field(() => Number)
-  @Column({ type: "float" })
+  @Column({ type: "int", default: 0 })
   undeserved_count: Number;
 
   @Field(() => Number)
-  @Column()
+  @Column({ type: "int", default: 0 })
   view_count: Number;
 
   @Field(() => String)
