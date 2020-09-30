@@ -20,6 +20,7 @@ import { UserSettingsResolver } from "./resolvers/UserSettings";
 import { createConnection } from "typeorm";
 
 import { ApolloServer } from "apollo-server-express";
+
 import { UserSettings } from "./entities/UserSettings";
 import { UserProfile } from "./entities/UserProfile";
 import { PostUserAction } from "./entities/PostUserAction";
