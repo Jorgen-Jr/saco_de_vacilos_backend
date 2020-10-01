@@ -30,7 +30,7 @@ import { Role } from "./entities/Role";
 import { User } from "./entities/User";
 
 const main = async () => {
-  await createConnection({
+  const conn = await createConnection({
     type: "postgres",
     database: "db_vacilo",
     username: process.env.DB_USER || "root",
@@ -47,7 +47,12 @@ const main = async () => {
       UserProfile,
       UserSettings,
     ],
+    cli: {
+      migrationsDir: "src/migration",
+    },
   });
+
+  await conn.runMigrations();
 
   const RedisStore = connectRedis(session);
   const redis = new Redis();

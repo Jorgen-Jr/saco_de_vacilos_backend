@@ -12,6 +12,7 @@ import {
 } from "type-graphql";
 import { Post } from "../entities/Post";
 import { isAuth } from "../middleware/isAuth";
+import { getConnection } from "typeorm";
 
 @InputType()
 class PostInput {
@@ -30,6 +31,35 @@ export class PostResolver {
       relations: ["author", "guilty"],
       order: { updatedAt: "DESC" },
     });
+  }
+
+  @Query(() => [Post])
+  async feed(
+    @Arg("limit", () => Int) limit: number,
+    @Arg("cursor", () => String, { nullable: true }) cursor: string
+    // @Ctx() { req }: MyContext
+  ): Promise<Post[] | undefined> {
+    // const user_id = req.session.user_id;
+
+    const realLimit = Math.min(50, limit);
+
+    //TODO the correct way is to order by createdAt but postgres is messing with me and I'm tired =u=)>
+    //I'll be back to this issue.
+    const posts = await getConnection()
+      .getRepository(Post)
+      .createQueryBuilder("feed")
+      .innerJoinAndSelect("feed.author", "post.author")
+      // .distinctOn(['"feed.createdAt"'])
+      .orderBy('"feed_id"', "ASC")
+      .take(realLimit);
+
+    if (cursor) {
+      posts.where('"feed_createdAt" < :cursor', {
+        cursor: new Date(cursor),
+      });
+    }
+
+    return posts.getMany();
   }
 
   @Query(() => Post, { nullable: true })
