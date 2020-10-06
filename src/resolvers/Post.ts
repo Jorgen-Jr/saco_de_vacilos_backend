@@ -23,7 +23,7 @@ class PostInput {
   initial_balance: number;
 }
 
-@Resolver()
+@Resolver(Post)
 export class PostResolver {
   @Query(() => [Post])
   posts(): Promise<Post[]> {
@@ -48,13 +48,13 @@ export class PostResolver {
     const posts = await getConnection()
       .getRepository(Post)
       .createQueryBuilder("feed")
-      .innerJoinAndSelect("feed.author", "post.author")
-      // .distinctOn(['"feed.createdAt"'])
-      .orderBy('"feed_id"', "ASC")
+      .innerJoinAndSelect("feed.author", "user", 'user.id = feed."authorId"')
+      .distinctOn(["feed.id", 'feed."createdAt"'])
+      .orderBy("feed.id", "DESC")
       .take(realLimit);
 
     if (cursor) {
-      posts.where('"feed_createdAt" < :cursor', {
+      posts.where('feed."createdAt" < :cursor', {
         cursor: new Date(cursor),
       });
     }
