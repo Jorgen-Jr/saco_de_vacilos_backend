@@ -64,14 +64,14 @@ export class PostResolver {
       `
     select post.*,
     json_build_object(
-      'id', author.id
+      'id', author.id,
       'name', author.name,
-      'username', author.username,
+      'username', author.username
     ) as author
     from post
     inner join public.user as author on author.id = post."authorId"
     ${cursor ? `where post."createdAt" < $2` : ""}
-    order by post."createdAt"
+    order by post."createdAt" DESC
     limit $1
     `,
       replacements
@@ -95,8 +95,6 @@ export class PostResolver {
     // }
 
     // const posts = await postsQuery.getMany();
-
-    console.log(posts);
 
     return {
       posts: posts.slice(0, realLimit),
