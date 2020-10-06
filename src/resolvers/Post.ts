@@ -54,24 +54,49 @@ export class PostResolver {
     const realLimit = Math.min(50, limit);
     const realLimitPlusOne = realLimit + 1;
 
-    //TODO the correct way is to order by createdAt but postgres is messing with me and I'm tired =u=)>
-    //I'll be back to this issue, probably =u=)>
-
-    const postsQuery = getConnection()
-      .getRepository(Post)
-      .createQueryBuilder("feed")
-      .innerJoinAndSelect("feed.author", "user", 'user.id = feed."authorId"')
-      .distinctOn(["feed.id", 'feed."createdAt"'])
-      .orderBy("feed.id", "DESC")
-      .take(realLimitPlusOne);
+    const replacements: any[] = [realLimitPlusOne];
 
     if (cursor) {
-      postsQuery.where('feed."createdAt" < :cursor', {
-        cursor: new Date(cursor),
-      });
+      replacements.push(new Date(cursor));
     }
 
-    const posts = await postsQuery.getMany();
+    const posts = await getConnection().query(
+      `
+    select post.*,
+    json_build_object(
+      'id', author.id
+      'name', author.name,
+      'username', author.username,
+    ) as author
+    from post
+    inner join public.user as author on author.id = post."authorId"
+    ${cursor ? `where post."createdAt" < $2` : ""}
+    order by post."createdAt"
+    limit $1
+    `,
+      replacements
+    );
+
+    // //TODO the correct way is to order by createdAt but postgres is messing with me and I'm tired =u=)>
+    // //I'll be back to this issue, probably =u=)>
+    // // Am actually, this got kinda wacky, so I'm gonna get rid of it.
+    // const postsQuery = getConnection()
+    //   .getRepository(Post)
+    //   .createQueryBuilder("feed")
+    //   .innerJoinAndSelect("feed.author", "user", 'user.id = feed."authorId"')
+    //   .distinctOn(["feed.id", 'feed."createdAt"'])
+    //   .orderBy("feed.id", "DESC")
+    //   .take(realLimitPlusOne);
+
+    // if (cursor) {
+    //   postsQuery.where('feed."createdAt" < :cursor', {
+    //     cursor: new Date(cursor),
+    //   });
+    // }
+
+    // const posts = await postsQuery.getMany();
+
+    console.log(posts);
 
     return {
       posts: posts.slice(0, realLimit),
