@@ -9,6 +9,8 @@ import {
   Int,
   Field,
   ObjectType,
+  FieldResolver,
+  Root,
 } from "type-graphql";
 
 import argon2 from "argon2";
@@ -39,8 +41,19 @@ class UserResponse {
   user?: User;
 }
 
-@Resolver()
+@Resolver(User)
 export class UserResolver {
+  @FieldResolver(() => String)
+  email(@Root() user: User, @Ctx() { req }: MyContext) {
+    //Allright, It's ok to show him his own email.
+    if (req.session.user_id === user.id) {
+      return user.email;
+    }
+
+    //No his not allowed
+    return "";
+  }
+
   @Query(() => User, { nullable: true })
   async me(@Ctx() { req }: MyContext) {
     if (!req.session.user_id) {
