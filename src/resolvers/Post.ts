@@ -9,6 +9,7 @@ import {
   InputType,
   Field,
   UseMiddleware,
+  ObjectType,
 } from "type-graphql";
 import { Post } from "../entities/Post";
 import { isAuth } from "../middleware/isAuth";
@@ -23,6 +24,15 @@ class PostInput {
   initial_balance: number;
 }
 
+@ObjectType()
+class PaginatedPosts {
+  @Field(() => [Post])
+  posts: Post[];
+
+  @Field()
+  hasMore: Boolean;
+}
+
 @Resolver(Post)
 export class PostResolver {
   @Query(() => [Post])
@@ -33,33 +43,40 @@ export class PostResolver {
     });
   }
 
-  @Query(() => [Post])
+  @Query(() => PaginatedPosts)
   async feed(
     @Arg("limit", () => Int) limit: number,
     @Arg("cursor", () => String, { nullable: true }) cursor: string
     // @Ctx() { req }: MyContext
-  ): Promise<Post[] | undefined> {
+  ): Promise<PaginatedPosts> {
     // const user_id = req.session.user_id;
 
     const realLimit = Math.min(50, limit);
+    const realLimitPlusOne = realLimit + 1;
 
     //TODO the correct way is to order by createdAt but postgres is messing with me and I'm tired =u=)>
-    //I'll be back to this issue.
-    const posts = await getConnection()
+    //I'll be back to this issue, probably =u=)>
+
+    const postsQuery = getConnection()
       .getRepository(Post)
       .createQueryBuilder("feed")
       .innerJoinAndSelect("feed.author", "user", 'user.id = feed."authorId"')
       .distinctOn(["feed.id", 'feed."createdAt"'])
       .orderBy("feed.id", "DESC")
-      .take(realLimit);
+      .take(realLimitPlusOne);
 
     if (cursor) {
-      posts.where('feed."createdAt" < :cursor', {
+      postsQuery.where('feed."createdAt" < :cursor', {
         cursor: new Date(cursor),
       });
     }
 
-    return posts.getMany();
+    const posts = await postsQuery.getMany();
+
+    return {
+      posts: posts.slice(0, realLimit),
+      hasMore: posts.length === realLimitPlusOne,
+    };
   }
 
   @Query(() => Post, { nullable: true })
