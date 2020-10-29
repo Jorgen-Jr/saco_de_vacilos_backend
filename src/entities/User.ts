@@ -54,6 +54,10 @@ export class User extends BaseEntity {
   @OneToMany(() => Post, (post) => post.guilty)
   guiltyPosts: Post[];
 
+  @Field(() => [Post])
+  @OneToMany(() => Post, (post) => post.deserved_count)
+  votes: Post[];
+
   // @ManyToMany(typeof Role)
   // @JoinTable()
   // roles = Role[];

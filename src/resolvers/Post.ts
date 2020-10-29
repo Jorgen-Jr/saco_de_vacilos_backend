@@ -161,6 +161,35 @@ export class PostResolver {
     return post;
   }
 
+  @Mutation(() => Post, { nullable: true })
+  async vote(
+    @Arg("identifier") id: number,
+    @Arg("value") value: number,
+    @Ctx() { req }: MyContext
+  ): Promise<Post | null> {
+    const post = await Post.findOne(id);
+
+    const isDeserved = value !== -1;
+    const realValue = isDeserved ? 1 : -1;
+
+    const { user_id } = req.session;
+
+    if (!post) {
+      return null;
+    }
+
+    Post.update(
+      { id },
+      {
+        content,
+        deserved_count,
+        undeserved_count,
+      }
+    );
+
+    return post;
+  }
+
   @Mutation(() => Boolean)
   async deletePost(@Arg("identifier") id: number): Promise<Boolean> {
     await Post.delete(id);

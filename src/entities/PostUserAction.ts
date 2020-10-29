@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -18,17 +19,18 @@ export class PostUserAction extends BaseEntity {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Field(() => Post)
-  @OneToOne(() => Post)
+  @Field(() => Number)
+  @Column({ type: "int" })
+  value: number;
+
+  @ManyToOne(() => Post, (post) => post.deserved_count, {
+    onDelete: "CASCADE",
+  })
   post: Post;
 
   @Field(() => User)
-  @OneToOne(() => User)
+  @ManyToOne(() => User, (user) => user.votes)
   author: User;
-
-  @Field(() => String)
-  @Column({ type: "char" })
-  action: String;
 
   @Field(() => Date)
   @CreateDateColumn()
