@@ -24,15 +24,11 @@ export class Post extends BaseEntity {
 
   @Field(() => Number)
   @Column({ type: "float", default: 0 })
-  initial_balance!: number;
+  multiplier!: number;
 
   @Field(() => Number)
   @Column({ type: "int", default: 0 })
-  deserved_count: Number;
-
-  @Field(() => Number)
-  @Column({ type: "int", default: 0 })
-  undeserved_count: Number;
+  score: Number;
 
   @Field(() => Number)
   @Column({ type: "int", default: 0 })

@@ -9,6 +9,7 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 import { Post } from "./Post";
+import { PostUserAction } from "./PostUserAction";
 
 @ObjectType()
 @Entity()
@@ -54,9 +55,9 @@ export class User extends BaseEntity {
   @OneToMany(() => Post, (post) => post.guilty)
   guiltyPosts: Post[];
 
-  @Field(() => [Post])
-  @OneToMany(() => Post, (post) => post.deserved_count)
-  votes: Post[];
+  @Field(() => [PostUserAction])
+  @OneToMany(() => PostUserAction, (postuseraction) => postuseraction.author)
+  votes: PostUserAction[];
 
   // @ManyToMany(typeof Role)
   // @JoinTable()

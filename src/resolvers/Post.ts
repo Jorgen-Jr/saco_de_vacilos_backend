@@ -14,6 +14,7 @@ import {
 import { Post } from "../entities/Post";
 import { isAuth } from "../middleware/isAuth";
 import { getConnection } from "typeorm";
+import { PostUserAction } from "../entities/PostUserAction";
 
 @InputType()
 class PostInput {
@@ -126,8 +127,7 @@ export class PostResolver {
       ...input,
       authorId: user_id,
       guiltyId: actual_guilty,
-      deserved_count: 0,
-      undeserved_count: 0,
+      score: 0,
       view_count: 0,
       status: "U",
       active: true,
@@ -139,9 +139,7 @@ export class PostResolver {
   @Mutation(() => Post, { nullable: true })
   async updatePost(
     @Arg("identifier") id: number,
-    @Arg("content") content: string,
-    @Arg("deserve_count") deserved_count: number,
-    @Arg("undeserved_count") undeserved_count: number
+    @Arg("content") content: string
   ): Promise<Post | null> {
     const post = await Post.findOne(id);
 
@@ -153,8 +151,6 @@ export class PostResolver {
       { id },
       {
         content,
-        deserved_count,
-        undeserved_count,
       }
     );
 
@@ -178,12 +174,16 @@ export class PostResolver {
       return null;
     }
 
+    PostUserAction.create({
+      author: user_id,
+      post: post,
+      value: realValue,
+    });
+
     Post.update(
       { id },
       {
-        content,
-        deserved_count,
-        undeserved_count,
+        score: realValue,
       }
     );
 

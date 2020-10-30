@@ -5,7 +5,6 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
-  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
@@ -23,7 +22,7 @@ export class PostUserAction extends BaseEntity {
   @Column({ type: "int" })
   value: number;
 
-  @ManyToOne(() => Post, (post) => post.deserved_count, {
+  @ManyToOne(() => Post, (post) => post.id, {
     onDelete: "CASCADE",
   })
   post: Post;
