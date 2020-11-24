@@ -157,37 +157,66 @@ export class PostResolver {
     return post;
   }
 
-  @Mutation(() => Post, { nullable: true })
+  @Mutation(() => Boolean, { nullable: true })
+  @UseMiddleware(isAuth)
   async vote(
-    @Arg("identifier") id: number,
+    @Arg("post_id", () => Int) post_id: number,
     @Arg("value") value: number,
     @Ctx() { req }: MyContext
-  ): Promise<Post | null> {
-    const post = await Post.findOne(id);
-
+  ) {
     const isDeserved = value !== -1;
     const realValue = isDeserved ? 1 : -1;
 
     const { user_id } = req.session;
 
-    if (!post) {
-      return null;
-    }
-
-    PostUserAction.create({
-      author: user_id,
-      post: post,
-      value: realValue,
+    const user_action = await PostUserAction.findOne({
+      where: { author: user_id, post: post_id },
     });
 
-    Post.update(
-      { id },
-      {
-        score: realValue,
-      }
-    );
+    //The user has voted before and it's updating the vote.
+    if (user_action && user_action.value !== realValue) {
+      await getConnection().transaction(async (tm) => {
+        await tm.query(
+          `
+            update post_user_action
+            set value=$1
+            where "postId" = $2 and "authorId" = $3
+          `,
+          [realValue, post_id, user_id]
+        );
 
-    return post;
+        await tm.query(
+          `
+          update post
+          set score=score+$1
+          where id= $2
+          `,
+          [2 * realValue, post_id]
+        );
+      });
+    } else if (!user_action) {
+      //Has never voted before
+      await getConnection().transaction(async (tm) => {
+        await tm.query(
+          `
+            insert into post_user_action ("authorId", "postId", value)
+            values($1, $2, $3)
+          `,
+          [user_id, post_id, realValue]
+        );
+
+        await tm.query(
+          `
+            update post
+            set score=score+$1
+            where id= $2
+          `,
+          [realValue, post_id]
+        );
+      });
+    }
+
+    return true;
   }
 
   @Mutation(() => Boolean)
