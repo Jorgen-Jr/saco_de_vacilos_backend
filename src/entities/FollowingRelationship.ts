@@ -13,7 +13,7 @@ import { User } from "./User";
 @ObjectType()
 @Entity()
 export class FollowingRelationship extends BaseEntity {
-  @Field(() => String)
+  @Field(() => Number)
   @PrimaryGeneratedColumn()
   id!: number;
 
